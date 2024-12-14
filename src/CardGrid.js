@@ -17,7 +17,7 @@ export default function CardGrid({ cities }) {
                 {city.name}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                <strong>Country:</strong> {city.country}
+                <strong>Country:</strong> {city.countryName}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 <strong>Population:</strong> {city.population}

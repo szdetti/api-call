@@ -15,9 +15,20 @@ export default function App() {
   const { callApi } = apiCall();
 
   const handleSearch = async (city) => {
-    setCities(null);
+    // Clear previous errors
     setError(null);
 
+    // Attempt to retrieve previous search result
+    const normalisedCity = city.toLowerCase();
+    const cachedResult = localStorage.getItem(normalisedCity);
+
+    // If there is a matching result in localStorage, set that and return from this function
+    if (cachedResult) {
+      console.log(`Using cached data for "${city}"`);
+      setCities(JSON.parse(cachedResult));
+      return;
+    }
+    // ----------------- IF NO CACHED RESULT : -------------------------------------
     // Fetch city data
     const { data: cityData, error: cityError } = await callApi(
       getCitySearchInfo(city)
@@ -36,18 +47,17 @@ export default function App() {
         getWeatherSearchInfo(city.latitude, city.longitude)
       );
 
-      return {
-        ...city,
-        weather: weatherError
-          ? "No data available"
-          : weatherData?.current?.temp_c || "No data available",
-      };
+      city.weather = weatherError
+        ? "No data available"
+        : weatherData?.current?.temp_c || "No data available";
+
+      return city;
     });
 
-    // Wait for all weather data to resolve
+    // Wait for all weather data to resolve, then save result to localStorage and set cities
     const updatedCities = await Promise.all(weatherPromises);
-
-    // Update the cities state
+    console.log("updatedCities: ", updatedCities);
+    localStorage.setItem(normalisedCity, JSON.stringify(updatedCities));
     setCities(updatedCities);
   };
 
