@@ -1,5 +1,5 @@
 export default class SearchInfo {
-  constructor(baseUrl = "", params = {}, headers = {}) {
+  constructor(baseUrl, params, headers) {
     this.baseUrl = baseUrl;
     this.params = params;
     this.headers = headers;
@@ -7,7 +7,7 @@ export default class SearchInfo {
     this.url = baseUrl + (this.baseUrl.endsWith("?") ? "" : "?") + queryParams;
   }
 
-  updateUrl(newParams = {}) {
+  updateUrl(newParams) {
     // Merge existing parameters with the new ones (will overwrite with new value if the key(s) already exits)
     this.params = { ...this.params, ...newParams };
     const queryParams = new URLSearchParams(this.params).toString();

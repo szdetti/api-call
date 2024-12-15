@@ -13,7 +13,7 @@
 //   }));
 
 // }
-import City from "../objects/City";
+import City from "../models/City";
 
 export function createCities(data) {
   if (!Array.isArray(data)) {
@@ -28,8 +28,7 @@ export function createCities(data) {
         cityData.country,
         cityData.population,
         cityData.latitude,
-        cityData.longitude,
-        ""
+        cityData.longitude
       )
   );
 }

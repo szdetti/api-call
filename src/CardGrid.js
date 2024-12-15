@@ -1,5 +1,7 @@
 import React from "react";
 import { Card, CardContent, Typography, Grid2 } from "@mui/material";
+import AttractionCategory from "./models/AttractionCategory";
+
 export default function CardGrid({ cities }) {
   if (!cities || cities.length === 0) {
     return (
@@ -30,6 +32,27 @@ export default function CardGrid({ cities }) {
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 <strong>Current Temperature:</strong> {city.weather}°C
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                component="div"
+              >
+                <strong>Attractions:</strong>
+                {city.attractions &&
+                Object.keys(city.attractions).length > 0 ? (
+                  Object.entries(city.attractions).map(([category, values]) => (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      key={category}
+                    >
+                      <strong>{category}:</strong> {values.join(", ")}
+                    </Typography>
+                  ))
+                ) : (
+                  <em>None available</em>
+                )}
               </Typography>
             </CardContent>
           </Card>
