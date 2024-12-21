@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Box, CircularProgress, Grid2 } from "@mui/material";
-import SearchBar from "./SearchBar";
 import CardGrid from "./CardGrid";
 import { apiCall } from "./utils/fetchData";
 import { createCities } from "./utils/cityFactory";
@@ -8,14 +7,25 @@ import {
   getAttractionSearchInfo,
   getCitySearchInfo,
   getCurrentTempSearchInfo,
+  getForecastSearchInfo,
 } from "./utils/searchInfoFactory";
 import NoSearchCard from "./NoSearchCard";
+import Header from "./Header";
+import Footer from "./Footer";
 
 export default function App() {
   const [cities, setCities] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { callApi } = apiCall();
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useEffect(() => {
+    const header = document.querySelector("header");
+    if (header) {
+      setHeaderHeight(header.offsetHeight);
+    }
+  }, []);
 
   const handleSearch = async (city, selectedCategories) => {
     setError(null);
@@ -43,21 +53,34 @@ export default function App() {
 
       const initialCities = createCities(cityData.data);
 
-      const weatherPromises = initialCities.map(async (city) => {
-        const { data: weatherData, error: weatherError } = await callApi(
-          getCurrentTempSearchInfo(city.latitude, city.longitude)
-        );
-
-        city.currentTemp = weatherError
+      // Create an array of key-value pairs (city.id : city), then a map from it which retarins
+      // the last value for each duplicate key, they an array is created from the values of
+      // the map which will now only contain unique city objects
+      const citiesWithoutDuplicates = Array.from(
+        new Map(initialCities.map((city) => [city.id, city])).values()
+      );
+      const temperaturePromises = citiesWithoutDuplicates.map(async (city) => {
+        const { data: temperatureData, error: temperatureError } =
+          await callApi(
+            getCurrentTempSearchInfo(city.latitude, city.longitude)
+          );
+        if (temperatureError) {
+          console.warn(
+            "Error while fetching teperature data: ",
+            temperatureError.message
+          );
+        }
+        city.currentTemp = temperatureError
           ? "No data available"
-          : weatherData?.current?.temp_c || "No data available";
+          : temperatureData?.current?.temp_c || "No data available";
+        console.log(city.currentTemp);
 
         return city;
       });
 
-      const updatedCities = await Promise.all(weatherPromises);
+      const citiesWithCurrentTemp = await Promise.all(temperaturePromises);
 
-      const attractionsPromises = updatedCities.map(async (city) => {
+      const attractionsPromises = citiesWithCurrentTemp.map(async (city) => {
         const { data: attractionsData, error: attractionsError } =
           await callApi(
             getAttractionSearchInfo(
@@ -69,6 +92,11 @@ export default function App() {
 
         if (!attractionsError) {
           city.populateAttractinos(attractionsData, selectedCategories);
+        } else {
+          console.warn(
+            "Error while fetching attractions data: ",
+            attractionsError
+          );
         }
 
         return city;
@@ -76,12 +104,30 @@ export default function App() {
 
       const citiesWithAttractions = await Promise.all(attractionsPromises);
 
+      const forecastPromises = citiesWithAttractions.map(async (city) => {
+        const { data: forecastData, error: forecastError } = await callApi(
+          getForecastSearchInfo(city.latitude, city.longitude)
+        );
+
+        if (!forecastError) {
+          city.extractForecastData(forecastData);
+        } else {
+          console.warn(
+            "Error while fetching forecast data: ",
+            forecastError.message
+          );
+        }
+        return city;
+      });
+
+      const citiesWithForecast = await Promise.all(forecastPromises);
+
       // localStorage.setItem(
       //   normalisedCity,
       //   JSON.stringify(citiesWithAttractions)
       // );
 
-      setCities(citiesWithAttractions);
+      setCities(citiesWithForecast);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -89,33 +135,37 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    const header = document.querySelector("header");
+    if (header) {
+      setHeaderHeight(header.offsetHeight);
+    }
+  }, []);
+
   return (
-    <Container>
-      <SearchBar handleSearch={handleSearch} />
-      {error && <Box style={{ color: "red", marginTop: "10px" }}>{error}</Box>}
-      {loading && (
-        <Box
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "20px",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
-      {!loading && !cities && !error && (
-        <Box style={{ marginTop: "20px" }}>
-          <NoSearchCard />
-        </Box>
-      )}
-      {cities && !loading && (
-        <Box style={{ marginTop: "20px" }}>
+    <Container maxWidth={false} disableGutters>
+      <Header handleSearch={handleSearch} />
+      <Container style={{ marginTop: "20px", marginBottom: "20px" }}>
+        {error && <Box style={{ color: "red" }}>{error}</Box>}
+        {loading && (
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              mt: 4,
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
+        {!loading && !cities && !error && <NoSearchCard />}
+        {cities && !loading && (
           <Grid2 container spacing={2}>
             <CardGrid cities={cities} />
           </Grid2>
-        </Box>
-      )}
+        )}
+      </Container>
+      <Footer />
     </Container>
   );
 }

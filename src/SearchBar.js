@@ -6,7 +6,6 @@ import {
   FormControlLabel,
   Checkbox,
   Typography,
-  Grid2,
 } from "@mui/material";
 
 const CategoryEnum = Object.freeze({
@@ -36,57 +35,95 @@ export default function SearchBar({ handleSearch }) {
   return (
     <Box
       display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      sx={{ width: "100%", mt: 4 }}
+      flexDirection="column" // Stack the search bar and checkboxes vertically
+      sx={{ width: "100%", mt: 2 }}
     >
-      {/* Search input */}
-      <TextField
-        label="Enter City"
-        variant="outlined"
-        fullWidth
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        sx={{ width: "50%", marginBottom: 2 }}
-      />
-
-      {/* Label for checkboxes */}
-      <Typography
-        variant="subtitle1"
-        sx={{ marginBottom: 1, textAlign: "center" }}
+      {/* Search bar and button */}
+      <Box
+        display="flex"
+        flexDirection="row" // Align search bar and button horizontally
+        alignItems="center"
+        //justifyContent="center" // Align items to the left
+        sx={{ width: "70%", mx: "auto" }}
       >
-        What type of attractions should the results include (please select at
-        least one):
-      </Typography>
+        {/* Search input */}
+        <TextField
+          label="Enter City"
+          variant="outlined"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          sx={{ flex: "1 1 auto", marginRight: 2 }} // Flexible width for the input
+        />
 
-      {/* Category checkboxes */}
-      <Grid2 container spacing={2} sx={{ marginBottom: 2, width: "50%" }}>
-        {Object.keys(CategoryEnum).map((key) => (
-          <Grid2 item xs={6} key={key}>
+        {/* Search button */}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleSearch(city, selectedCategories)}
+          disabled={isSearchDisabled}
+          sx={{ flex: "0 1 auto" }}
+        >
+          Search
+        </Button>
+      </Box>
+
+      {/* Text and checkboxes */}
+      <Box
+        display="flex"
+        flexDirection="row" // Align text and checkboxes in a row
+        flexWrap="wrap" // Wrap to the next line if needed
+        alignItems="center" // Align items vertically in the center
+        sx={{
+          gap: 2, // Space between items
+          mt: 2,
+          mb: 2,
+        }}
+      >
+        {/* Instructional Text */}
+        <Typography
+          sx={{
+            flex: "0 0 auto", // Prevent wrapping
+            marginRight: 2, // Add space to the right of the text
+            lineHeight: "1.5rem", // Match checkbox vertical alignment
+          }}
+        >
+          Select one or more attraction types:
+        </Typography>
+
+        {/* Checkboxes */}
+        <Box
+          display="flex"
+          flexDirection="row" // Align checkboxes in a row
+          flexWrap="wrap" // Wrap when necessary
+          sx={{
+            gap: 1, // Space between checkboxes
+            alignItems: "center",
+          }}
+        >
+          {Object.keys(CategoryEnum).map((key) => (
             <FormControlLabel
+              key={key}
               control={
                 <Checkbox
+                  size="small" // Smaller checkbox size
                   checked={selectedCategories.includes(CategoryEnum[key])}
                   onChange={() => handleCheckboxChange(CategoryEnum[key])}
+                  sx={{
+                    transform: "scale(0.8)", // Make the checkbox slightly smaller
+                  }}
                 />
               }
               label={key} // Label as the key (e.g., "Historical")
+              sx={{
+                fontSize: "0.65rem", // Smaller text for labels
+                marginRight: 1, // Space between checkboxes
+                alignItems: "center",
+                display: "inline-flex", // Ensure proper alignment
+              }}
             />
-          </Grid2>
-        ))}
-      </Grid2>
-
-      {/* Search button */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => handleSearch(city, selectedCategories)}
-        disabled={isSearchDisabled}
-        sx={{ width: "150px" }}
-      >
-        Search
-      </Button>
+          ))}
+        </Box>
+      </Box>
     </Box>
   );
 }

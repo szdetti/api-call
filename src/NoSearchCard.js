@@ -4,7 +4,7 @@ import { Card, CardContent, Typography, Grid2 } from "@mui/material";
 export default function NoSearchCard() {
   return (
     <Grid2 container justifyContent="center">
-      <Grid2 item>
+      <Grid2>
         <Card
           style={{
             minWidth: 320,
