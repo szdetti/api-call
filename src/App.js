@@ -29,7 +29,7 @@ export default function App() {
 
     if (cachedResult.length > 0) {
       console.log(`Using cached data for "${city}"`);
-      setCities(cachedResult); // No need to parse again, as it's already parsed
+      setCities(cachedResult);
       setLoading(false);
       return;
     }
@@ -67,11 +67,11 @@ export default function App() {
 
       // Cache results if no API error occurred
       if (!apiError) {
-        let key = selectedCategories.toString();
-        let result = { [key]: citiesWithForecast };
-        localStorage.setItem(normalisedCity, JSON.stringify(result));
+        const existingData =
+          JSON.parse(localStorage.getItem(normalisedCity)) || {};
+        existingData[selectedCategories.sort().toString()] = citiesWithForecast;
+        localStorage.setItem(normalisedCity, JSON.stringify(existingData));
       }
-
       setCities(citiesWithForecast);
     } catch (err) {
       setError(err.message);
@@ -85,11 +85,13 @@ export default function App() {
 
   function getCachedData(normalisedCity, selectedCategories) {
     let results = [];
-    const catsToKey = selectedCategories.toString();
+    const catsToKey = selectedCategories.sort().toString();
+    console.log(catsToKey);
     const storedData = localStorage.getItem(normalisedCity);
     if (storedData) {
       const parsedData = JSON.parse(storedData);
       const storedKeys = Object.keys(parsedData);
+      console.log(storedKeys);
       if (storedKeys.includes(catsToKey)) {
         results = parsedData[catsToKey];
       }
@@ -181,21 +183,4 @@ export default function App() {
   /**************************************************************************** */
   const props = { handleSearch, cities, error, loading };
   return <AppLayout {...props} />;
-  // (
-  // <Container maxWidth={false} disableGutters>
-  //   <Header handleSearch={handleSearch} />
-  //   <Container style={{ margin: "20px auto" }}>
-  //     {cities?.length === 0 && <NoResultsCard />}
-  //     {error && <ErrorCard />}
-  //     {!loading && !cities && !error && <NoSearchCard />}
-  //     {loading && <Loading />}
-  //     {cities && !loading && (
-  //       <Grid2 container spacing={2}>
-  //         <CardGrid cities={cities} />
-  //       </Grid2>
-  //     )}
-  //   </Container>
-  //   <Footer />
-  // </Container>
-  // );
 }

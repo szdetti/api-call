@@ -33,8 +33,7 @@ export default function SearchBar({ handleSearch }) {
     );
   };
 
-  const isSearchDisabled =
-    selectedCategories.length === 0 && city?.length === 0;
+  const isSearchDisabled = selectedCategories.length === 0;
 
   return (
     <Box

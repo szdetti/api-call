@@ -1,3 +1,5 @@
+import { ReverseAttractionCategory } from "./AttractionCategory";
+
 export default class City {
   static attractionPerCatLimit = 5; // how many attractions per category to collect in the pouplateAttractions function
   static resultsPerAttractionCat = 500; // used to determine max how many results to ask for in api call
@@ -35,13 +37,13 @@ export default class City {
               feature.kinds.split(",").includes(cat)
             );
             if (matchingCat) {
-              this.attractions[matchingCat] =
-                this.attractions[matchingCat] || []; // if there isn't an array for this category yet, assign it an empty array
+              let catToKey = ReverseAttractionCategory[matchingCat]; // get the key name from the AtrractionCategory based on the value
+              this.attractions[catToKey] = this.attractions[catToKey] || []; // if there isn't an array for this category yet, assign it an empty array
               if (
-                this.attractions[matchingCat].length < // if there are less than the maximum amount of attractions per category in the array
+                this.attractions[catToKey].length < // if there are less than the maximum amount of attractions per category in the array
                 City.attractionPerCatLimit
               ) {
-                this.attractions[matchingCat].push(feature.name); // add the attraction name to the array
+                this.attractions[catToKey].push(feature.name); // add the attraction name to the array
               } else {
                 catsToMatch = catsToMatch.filter(
                   // if the max limit has been reached, remove the category from the array so that it will not be matched further
