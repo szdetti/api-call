@@ -8,7 +8,7 @@ export default function Header({ handleSearch }) {
       position="static"
       sx={{
         width: "100vw",
-        background: "linear-gradient(to bottom, #4a80a4, #7ca1bb)",
+        background: "linear-gradient(to bottom, #2F536A, #49708D)",
         opacity: 0.95, // Slight transparency
         padding: 2, // Add some padding for spacing
         //zIndex: 1201, // Ensure the header stays on top

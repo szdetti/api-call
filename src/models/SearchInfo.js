@@ -1,4 +1,6 @@
 export default class SearchInfo {
+  static requestMethod = "GET";
+
   constructor(baseUrl, params, headers) {
     this.baseUrl = baseUrl;
     this.params = params;

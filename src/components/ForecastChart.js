@@ -9,7 +9,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
-
+import { Box } from "@mui/material";
 // Register necessary Chart.js components
 ChartJS.register(
   BarElement,
@@ -43,6 +43,10 @@ const ForecastChart = memo(({ forecast }) => {
       legend: {
         display: true,
       },
+      title: {
+        display: true,
+        text: "3-Day Temperature Forecast",
+      },
     },
     scales: {
       x: {
@@ -59,12 +63,25 @@ const ForecastChart = memo(({ forecast }) => {
         beginAtZero: true,
       },
     },
+    onResize: (chart, size) => {
+      // Add aria-label dynamically to canvas
+      chart.canvas.setAttribute(
+        "aria-label",
+        "Bar chart showing a 3-day temperature forecast in degrees Celsius."
+      );
+    },
   };
 
   return (
-    <div style={{ height: "300px" }}>
+    <Box
+      sx={{
+        height: "300px", // Increase height for better visualization
+        width: "100%", // Ensure the chart uses all available space
+        marginRight: "50px",
+      }}
+    >
       <Bar data={data} options={options} />
-    </div>
+    </Box>
   );
 });
 

@@ -1,8 +1,10 @@
+import SearchInfo from "../models/SearchInfo";
+
 export function apiCall() {
   const callApi = async (searchInfo) => {
     try {
       const response = await fetch(searchInfo.url, {
-        method: "GET",
+        method: SearchInfo.requestMethod,
         headers: searchInfo.headers,
       });
 

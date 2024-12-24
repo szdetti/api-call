@@ -9,6 +9,8 @@ export default function NoSearchCard() {
           style={{
             minWidth: 320,
             maxWidth: 320,
+            minHeight: 400,
+            opacity: 0.98,
             marginBottom: "10px",
             margintop: "20px",
           }}

@@ -7,6 +7,7 @@ import {
   Checkbox,
   Typography,
 } from "@mui/material";
+import { textFieldStyles } from "../resources/textFieldStyles";
 
 const CategoryEnum = Object.freeze({
   Historical: "historic",
@@ -19,7 +20,9 @@ const CategoryEnum = Object.freeze({
 
 export default function SearchBar({ handleSearch }) {
   const [city, setCity] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([
+    CategoryEnum.Cultural,
+  ]);
 
   const handleCheckboxChange = (category) => {
     setSelectedCategories(
@@ -30,7 +33,8 @@ export default function SearchBar({ handleSearch }) {
     );
   };
 
-  const isSearchDisabled = selectedCategories.length === 0;
+  const isSearchDisabled =
+    selectedCategories.length === 0 && city?.length === 0;
 
   return (
     <Box
@@ -48,11 +52,15 @@ export default function SearchBar({ handleSearch }) {
       >
         {/* Search input */}
         <TextField
+          id="city-input" // Unique ID for accessibility
           label="Enter City"
           variant="outlined"
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          sx={{ flex: "1 1 auto", marginRight: 2 }} // Flexible width for the input
+          inputProps={{
+            "aria-label": "Enter city", // Accessible label for screen readers
+          }}
+          sx={textFieldStyles}
         />
 
         {/* Search button */}
@@ -61,20 +69,36 @@ export default function SearchBar({ handleSearch }) {
           color="primary"
           onClick={() => handleSearch(city, selectedCategories)}
           disabled={isSearchDisabled}
-          sx={{ flex: "0 1 auto" }}
+          sx={{
+            flex: "0 1 auto",
+            color: "#ffffff", // White text for better contrast
+            backgroundColor: "#092e4b", // Darker  for sufficient contrast
+            "&:hover": {
+              backgroundColor: "#0f4163", // Slightly ligher  on hover
+            },
+            "&:focus": {
+              outline: "2px solid #ffffff", // High contrast focus outline
+              outlineOffset: "2px",
+            },
+            "&:disabled": {
+              backgroundColor: "#cccccc", // Light gray for disabled state
+              color: "#666666", // Ensure text remains legible
+            },
+          }}
         >
           Search
         </Button>
       </Box>
 
       {/* Text and checkboxes */}
+      {/* Text and checkboxes */}
       <Box
         display="flex"
-        flexDirection="row" // Align text and checkboxes in a row
-        flexWrap="wrap" // Wrap to the next line if needed
-        alignItems="center" // Align items vertically in the center
+        flexDirection="row"
+        flexWrap="wrap"
+        alignItems="center"
         sx={{
-          gap: 2, // Space between items
+          gap: 2,
           mt: 2,
           mb: 2,
         }}
@@ -82,9 +106,17 @@ export default function SearchBar({ handleSearch }) {
         {/* Instructional Text */}
         <Typography
           sx={{
-            flex: "0 0 auto", // Prevent wrapping
-            marginRight: 2, // Add space to the right of the text
+            flex: "0 0 auto", // Do not stretch the text initially
+            marginRight: 2, // Add spacing between text and checkboxes
             lineHeight: "1.5rem", // Match checkbox vertical alignment
+            whiteSpace: "nowrap", // Prevent wrapping initially
+            textAlign: "left", // Align text to the left initially
+            "@media (max-width: 600px)": {
+              flex: "1 1 100%", // Take full width on small screens
+              textAlign: "center", // Center text on small screens
+              marginRight: 0, // Remove right margin on small screens
+              marginBottom: 1, // Add spacing below text when above checkboxes
+            },
           }}
         >
           Select one or more attraction types:
@@ -93,10 +125,10 @@ export default function SearchBar({ handleSearch }) {
         {/* Checkboxes */}
         <Box
           display="flex"
-          flexDirection="row" // Align checkboxes in a row
-          flexWrap="wrap" // Wrap when necessary
+          flexDirection="row"
+          flexWrap="wrap"
           sx={{
-            gap: 1, // Space between checkboxes
+            gap: 1,
             alignItems: "center",
           }}
         >
@@ -105,18 +137,21 @@ export default function SearchBar({ handleSearch }) {
               key={key}
               control={
                 <Checkbox
-                  size="small" // Smaller checkbox size
+                  size="medium"
                   checked={selectedCategories.includes(CategoryEnum[key])}
                   onChange={() => handleCheckboxChange(CategoryEnum[key])}
                   sx={{
-                    transform: "scale(0.8)", // Make the checkbox slightly smaller
+                    transform: "scale(0.9)", // Make the checkbox slightly smaller
+                    "&.Mui-checked": {
+                      color: "white", // Change the fill color when checked
+                    },
                   }}
                 />
               }
               label={key} // Label as the key (e.g., "Historical")
               sx={{
-                fontSize: "0.65rem", // Smaller text for labels
-                marginRight: 1, // Space between checkboxes
+                fontSize: "0.65rem",
+                marginRight: 1,
                 alignItems: "center",
                 display: "inline-flex", // Ensure proper alignment
               }}

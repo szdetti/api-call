@@ -1,4 +1,5 @@
 import SearchInfo from "../models/SearchInfo";
+import City from "../models/City";
 
 const rapidKey = process.env.REACT_APP_RAPID_KEY;
 
@@ -37,8 +38,8 @@ export const getAttractionSearchInfo = (
   longitude,
   selectedCategories
 ) => {
-  const radius = 5000; // distance from the point of search (city) in metres
-  const limit = 500 * selectedCategories.length; // retrieve max 500 results for each category
+  const radius = City.attracionSearchRadius; // distance from the point of search (city) in metres
+  const limit = City.resultsPerAttractionCat * selectedCategories.length; // retrieve max 500 results for each category
   const preparedCategories = selectedCategories.join(",");
   if (latitude && longitude && selectedCategories) {
     return new SearchInfo(

@@ -3,12 +3,6 @@ import { Card, CardContent, Typography, Grid2 } from "@mui/material";
 import ForecastChart from "./ForecastChart";
 
 export default function CardGrid({ cities }) {
-  if (!cities || cities.length === 0) {
-    return (
-      <Typography variant="h6">No cities available to display.</Typography>
-    );
-  }
-
   return (
     <Grid2
       container
